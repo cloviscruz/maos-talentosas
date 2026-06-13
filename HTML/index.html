@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mãos Talentosas — Pedidos</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>✦ Mãos Talentosas</h1>
+    <p id="header-sub">Faça seu pedido</p>
+  </div>
+
+  <!-- ÁREA CLIENTE -->
+  <div id="area-cliente">
+
+    <!-- SEM EVENTO -->
+    <div id="sem-evento" style="display:none">
+      <div class="card" style="text-align:center;padding:2rem;color:var(--text3)">
+        <div style="font-size:32px;margin-bottom:8px">🛠</div>
+        <div style="font-weight:600;color:var(--text2)">Nenhum evento ativo</div>
+        <div style="font-size:13px;margin-top:4px">Aguarde a configuração do evento.</div>
+      </div>
+    </div>
+
+    <!-- SEM PRODUTOS -->
+    <div id="sem-produtos" style="display:none">
+      <div class="card" style="text-align:center;padding:2rem;color:var(--text3)">
+        <div style="font-size:32px;margin-bottom:8px">🍽</div>
+        <div style="font-weight:600;color:var(--text2)">Cardápio não disponível</div>
+        <div style="font-size:13px;margin-top:4px">Aguarde a abertura dos pedidos.</div>
+      </div>
+    </div>
+
+    <!-- FLUXO PEDIDO -->
+    <div id="fluxo-pedido" style="display:none">
+
+      <div id="evento-chip-box"></div>
+
+      <!-- STEPS INDICATOR -->
+      <div class="steps" id="steps-bar">
+        <div class="step-dot active" id="step1">1</div>
+        <div class="step-line" id="line1"></div>
+        <div class="step-dot" id="step2">2</div>
+        <div class="step-line" id="line2"></div>
+        <div class="step-dot" id="step3">3</div>
+      </div>
+
+      <!-- PASSO 1: CARDÁPIO -->
+      <div id="passo1" class="tab-content active">
+        <div class="card">
+          <div class="section-title">Cardápio</div>
+          <div id="cardapio-cliente"></div>
+          <div class="total-fixo">
+            <div class="total-linha">
+              <span class="total-label">Total selecionado</span>
+              <span class="total-val" id="total-display">R$ 0,00</span>
+            </div>
+            <button class="btn btn-primary" id="btn-passo2" onclick="irPasso2()" style="opacity:.4;cursor:not-allowed" disabled>Continuar →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSO 2: DADOS + PAGAMENTO -->
+      <div id="passo2" class="tab-content">
+        <div class="card">
+          <div class="section-title">Seus dados</div>
+          <div class="form-group"><label>Nome *</label><input type="text" id="p-nome" placeholder="Seu nome completo"></div>
+          <div class="form-group"><label>WhatsApp (opcional)</label><input type="tel" id="p-tel" placeholder="(11) 99999-9999"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Como vai pagar?</div>
+          <div class="pgto-opcoes" id="pgto-opcoes">
+            <div class="pgto-op selected" onclick="selecionarPgto(this,'pix')">
+              <div class="pgto-icon">📱</div><div class="pgto-label">Pix</div>
+            </div>
+            <div class="pgto-op" onclick="selecionarPgto(this,'cartao')">
+              <div class="pgto-icon">💳</div><div class="pgto-label">Cartão</div>
+            </div>
+            <div class="pgto-op" onclick="selecionarPgto(this,'dinheiro')">
+              <div class="pgto-icon">💵</div><div class="pgto-label">Dinheiro</div>
+            </div>
+            <div class="pgto-op" onclick="selecionarPgto(this,'depois')">
+              <div class="pgto-icon">📅</div><div class="pgto-label">Pagar depois</div>
+            </div>
+          </div>
+          <div id="grupo-data" style="display:none" class="form-group">
+            <label>Data para pagar</label>
+            <input type="date" id="p-data-pagto">
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Consumo</div>
+          <div class="pgto-opcoes">
+            <div class="pgto-op selected" id="cons-local" onclick="selecionarConsumo(this,'local')">
+              <div class="pgto-icon">🪑</div><div class="pgto-label">Comer na hora</div>
+            </div>
+            <div class="pgto-op" id="cons-viagem" onclick="selecionarConsumo(this,'viagem')">
+              <div class="pgto-icon">🥡</div><div class="pgto-label">Para viagem</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="irPasso1()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);width:auto;padding:13px 20px">← Voltar</button>
+          <button class="btn btn-primary" onclick="irPasso3()" style="flex:1">Revisar pedido →</button>
+        </div>
+      </div>
+
+      <!-- PASSO 3: REVISÃO + CONFIRMAR -->
+      <div id="passo3" class="tab-content">
+        <div class="card">
+          <div class="section-title">Resumo do pedido</div>
+          <div id="resumo-itens"></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;font-weight:600">Total</span>
+            <span style="font-size:20px;font-weight:700" id="resumo-total">R$ 0,00</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">Dados confirmados</div>
+          <div id="resumo-dados" style="font-size:13px;line-height:1.8;color:var(--text2)"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="irPasso2()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);width:auto;padding:13px 20px">← Voltar</button>
+          <button class="btn btn-primary" onclick="confirmarPedido()" style="flex:1">✓ Confirmar pedido</button>
+        </div>
+        <div class="alert-success" id="success-msg">🎉 Pedido registrado com sucesso!<br><span style="font-size:13px;font-weight:400">Obrigado pela compra!</span></div>
+      </div>
+
+    </div><!-- /fluxo-pedido -->
+  </div><!-- /area-cliente -->
+
+  <!-- ÁREA ADMIN -->
+  <div id="area-admin" style="display:none">
+    <div class="admin-header">
+      <h2>⚙ Painel Admin</h2>
+      <button class="sair-btn" onclick="sairAdmin()">Sair ✕</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdmin('painel')">Painel</button>
+      <button class="admin-tab" onclick="switchAdmin('relatorio')">Relatório</button>
+      <button class="admin-tab" onclick="switchAdmin('config')">Config</button>
+    </div>
+
+    <!-- PAINEL -->
+    <div id="admin-painel" class="tab-content active">
+      <div class="grid3" style="margin-bottom:14px">
+        <div class="metric"><div class="metric-val" id="m-total">0</div><div class="metric-label">Pedidos</div></div>
+        <div class="metric"><div class="metric-val" id="m-recebido">R$ 0</div><div class="metric-label">Recebido</div></div>
+        <div class="metric"><div class="metric-val" id="m-areceber">R$ 0</div><div class="metric-label">A receber</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <select id="filtro-status" onchange="renderPainel()" style="flex:1;min-width:120px;font-size:13px;padding:7px 10px">
+          <option value="">Todos</option>
+          <option value="pendente">Pendente</option>
+          <option value="pago">Pago</option>
+          <option value="depois">Pagar depois</option>
+        </select>
+        <select id="filtro-pgto" onchange="renderPainel()" style="flex:1;min-width:110px;font-size:13px;padding:7px 10px">
+          <option value="">Forma</option>
+          <option value="pix">Pix</option>
+          <option value="cartao">Cartão</option>
+          <option value="dinheiro">Dinheiro</option>
+          <option value="depois">Depois</option>
+        </select>
+      </div>
+      <div id="lista-pedidos"><div class="empty">Nenhum pedido ainda.</div></div>
+    </div>
+
+    <!-- RELATÓRIO -->
+    <div id="admin-relatorio" class="tab-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="section-title" style="margin:0">Todos os pedidos</div>
+        <button class="btn-sm" onclick="exportarCSV()">⬇ CSV</button>
+      </div>
+      <div style="overflow-x:auto" id="tabela-rel"><div class="empty">Nenhum pedido.</div></div>
+    </div>
+
+    <!-- CONFIG -->
+    <div id="admin-config" class="tab-content">
+      <div class="card">
+        <div class="section-title">Evento atual</div>
+        <div class="grid2">
+          <div class="form-group"><label>Nome do evento</label><input type="text" id="cfg-ev-nome" placeholder="Ex: Domingo de Artesanato"></div>
+          <div class="form-group"><label>Data</label><input type="date" id="cfg-ev-data"></div>
+        </div>
+        <button class="btn btn-primary" onclick="salvarEvento()" style="width:auto;padding:10px 20px;font-size:13px">Salvar evento</button>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Cardápio</div>
+        <div id="cfg-cardapio-list"></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <input type="text" id="cfg-prod-nome" placeholder="Nome do produto" style="flex:1">
+          <input type="number" id="cfg-prod-preco" placeholder="Preço" step="0.01" style="width:90px">
+          <button class="btn-sm" onclick="addProduto()">+ Add</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">QR Code do formulário</div>
+        <div style="text-align:center;padding:8px 0">
+          <div id="qr-placeholder" style="font-size:13px;color:var(--text2)">Cole o link do site para gerar o QR Code.</div>
+          <div id="qr-result" style="display:none">
+            <div class="qr-wrap"><canvas id="qr-canvas"></canvas></div>
+            <div class="qr-url" id="qr-url-text"></div>
+            <button class="btn-sm" onclick="baixarQR()" style="margin-top:8px">⬇ Baixar QR Code</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <input type="url" id="cfg-url" placeholder="https://seuprojeto.netlify.app" style="flex:1;font-size:13px">
+            <button class="btn-sm" onclick="gerarQR()">Gerar QR</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Senha admin</div>
+        <div class="grid2">
+          <div class="form-group"><label>Nova senha</label><input type="password" id="cfg-senha" placeholder="Nova senha"></div>
+        </div>
+        <button class="btn-sm" onclick="salvarSenha()">Salvar senha</button>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Dados</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-sm" onclick="exportarJSON()">📦 Backup</button>
+          <button class="btn-sm" onclick="importarJSON()">📂 Importar</button>
+          <button class="btn-sm" onclick="limparPedidos()" style="color:var(--red);border-color:var(--red)">🗑 Limpar pedidos</button>
+        </div>
+        <p style="font-size:11px;color:var(--text3);margin-top:8px">Dados salvos neste navegador. Faça backup regularmente.</p>
+      </div>
+    </div>
+
+  </div><!-- /area-admin -->
+
+  <!-- BOTÃO ADMIN -->
+  <div style="text-align:center;margin-top:24px;padding-bottom:24px">
+    <button onclick="abrirModalSenha()" style="background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text2);font-size:12px;padding:8px 16px;display:inline-flex;align-items:center;gap:6px;">
+      ⚙ Área administrativa
+    </button>
+  </div>
+
+</div><!-- /container -->
+
+<!-- MODAL SENHA -->
+<div class="modal-overlay" id="modal-senha">
+  <div class="modal-box">
+    <h3>Área administrativa</h3>
+    <p>Digite a senha para acessar o painel.</p>
+    <div class="form-group"><input type="password" id="input-senha" placeholder="Senha" onkeydown="if(event.key==='Enter')verificarSenha()"></div>
+    <div id="senha-erro" style="color:var(--red);font-size:12px;display:none;margin-top:-8px;margin-bottom:4px">Senha incorreta.</div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="fecharModalSenha()">Cancelar</button>
+      <button class="btn btn-primary" onclick="verificarSenha()" style="width:auto;padding:8px 20px;font-size:13px">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR CODE ENGINE (embutido, sem CDN) -->
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="../js/app.js"></script>
+
+</body>
+</html>
